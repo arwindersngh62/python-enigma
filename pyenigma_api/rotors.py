@@ -1,65 +1,29 @@
-rotor_types = {
-    "IC": "DMTWSILRUYQNKFEJCAZBPGXOHV",
-    "IIC": "HQZGPJTMOBLNCIFDYAWVEUSRKX",
-    "IIIC": "UQNTLSZFMREHDPXKIBVYGJCWOA",
-    "I": "JGDQOXUSCAMIFRVTPNEWKBLZYH",
-    "II": "NTZPSFBOKMWRCJDIVLAEYUXHGQ",
-}
+"""This module contains the implementation of rotors and reflector"""
 
-
-class Shift:
-    """
-    This class keeps the track between alignment of various rotors.
-    The metal contact numbered 1 on first rotor may be in contact with a rotor
-    numbered 4 on rotor 2. This leads a shift in the character as it moves from one
-    rotor to next. This is done by objects of shift class.
-    """
-
-    def __init__(self, value: int) -> None:
-        """
-        By default the Shift class only has a value that keeps track of the
-        value by which the input gets shifted.
-        """
-        self._value = value
-
-    def incShift(self) -> int:
-        """
-        This method increases the value of shift by one. If the incremented value is more
-        than 25 then it comes back to zero.
-        The return value shows whether the shift has be reset to zero or no.
-        In real world a shift value increment refers to the actuator bar of the machine
-        moving the rotor after each letter is typed.
-        """
-        self._value = self._value + 1
-        if int(self._value / 26) > 0:
-            self._value %= 26
-            return 1
-        self._value %= 26
-        return 0
-
-    def __add__(self, num: Shift) -> int:
-        """
-        returns an integer value when shift is added to an integer
-        """
-        out = num + self._value
-        return out % 26
-
-    def __sub__(self, num):
-        """
-        returns an integer value when shift and an integer are subtracted.
-        """
-        out = num - self._value
-        return out % 26
-
-    def __repr__(self):
-        """
-        the string representation of a Shift is just its value
-        """
-        return str(self._value)
-
+@staticmethod
+def shift_string_left(string_in: str, shift_count:int):
+    return string_in[shift_count:] + string_in[:shift_count]
 
 class Rotor:
-    def __init__(self, rotor_type: str):
+    """The class implementing the rotor
+    
+    A rotor has a wiring connecting a character from one side to another 
+    character on the other side. There is a notch that decides when the next
+    rotor will rotate with the current one. The ring setting changes the alphabet ring
+    which means it shifts entire mapping of alphabet ring.
+    We are assuming a fixed distance between notch and the window, which is two thirds of
+    the alphabets which is 18. This means if the notch is at 'a' and we start from there
+    we will have change on next rotor after 18 rotations.
+    
+    Attributes:
+        base_wiring (str): A string of 26 characters that represents the base wiring
+        notch (str): The place of the notch on the alphabet ring 
+        ring_setting (str): The char representing how much alphabet ring is shifted
+            from 
+    """
+    notch_distance = 18
+    
+    def __init__(self):
         """
         The Rotor class creates objects that represent a rotor in enigma machine
         a rotor gets an input and converts it into a different character.
@@ -68,20 +32,49 @@ class Rotor:
         The constructor requires a rotor type which should be a key for the
         rotor types dictionary given above.
         """
-        self._mapping = rotor_types[rotor_type]
+        self.base_wiring = "ABCDEFGHIJKLMOPQRSTUVWXYZ"
+        self.notch = "A"
+        self.ring_setting = "A"
+        self.actual_wiring = "ABCDEFGHIJKLMOPQRSTUVWXYZ"
+        
+        
+        # TODO checks are needed for entire config:
+        # TODO length checks
+        # TODO base_wiring check for repetition
+        
+        
+    def apply_entire_config(self, base_wiring:str, notch:str, ring_setting:str):
+        self.base_wiring = base_wiring
+        self.notch = notch
+        self.ring_setting = ring_setting
+        
+        # Apply the ring setting to the base setting
+        rotate_base_by = ord(ring_setting) - 65
+        self.actual_wiring = shift_string_left(self.base_wiring, rotate_base_by)
+        
 
-    def get_output(self, input: int) -> int:
+    def get_output(self, in_int: int) -> int:
         """
         The method that converts the input to the output across the rotor
         it simple means the getting the character from the rotor type string
         based on the int position of input character.
         """
-        return ord(self._mapping[input]) - 65
+        # The in_input is indexed from 1 but the list is indexed from 0
+        return ord(self.actual_wiring[in_int-1]) - 64
 
-    def get_rev_output(self, input: int) -> int:
+    def get_rev_output(self, in_int: int) -> int:
         """
         the method is same it gets the output from the other side.
         this is done by finding where the char being inpput is present
         on the string of rotor type and return its index.
         """
-        return self._mapping.index(chr(input + 65))
+        return self.actual_wiring.index(chr(in_int + 64)) + 1
+
+def module_demo():
+    rotor = Rotor()
+    rotor.apply_entire_config(base_wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ", notch = "A", ring_setting = "B")
+    print(rotor.get_output(1))
+    print(rotor.get_rev_output(11))
+    
+if __name__ == "__main__":
+    module_demo()
