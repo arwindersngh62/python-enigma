@@ -43,8 +43,11 @@ class PlugBoard:
         self.shorts_dict: Dict[int, int] = {}
         self.shorts_list: List[Tuple[int, int]] = []
     
+    def get_all_shorts(self)-> List[Tuple[int, int]]:
+        return self.shorts_list
+    
     @ensure_short_is_alphabet
-    def add_short(self, short_tuple: Tuple[int, int]) -> None:
+    def add_short(self, short: Tuple[int, int]) -> None:
         """Add the provided short to the plugboard
 
         Args:
@@ -53,14 +56,14 @@ class PlugBoard:
         Raises:
             KeyError : Riases if the short is already present.
         """
-        short_a, short_b = short_tuple
+        short_a, short_b = short
         if short_a in self.shorts_dict or short_b in self.shorts_dict:
             raise KeyError("The provided element is already shorted to another element")
         if short_a == short_b:
             raise Exception("An element cannot be shorted with itelf")
         self.shorts_dict[short_a] = short_b
         self.shorts_dict[short_b] = short_a
-        self.shorts_list.append(short_tuple)
+        self.shorts_list.append(short)
 
     @ensure_short_is_alphabet
     def remove_short(self, short_tuple: Tuple[int, int]) -> None:
