@@ -7,6 +7,20 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+fastapi = "^0.112.0"
+typer = "^0.12.3"
+sphinx = "^8.0.2"
+sphinxcontrib-napoleon = "^0.7"
+
+
+[tool.poetry.group.dev.dependencies]
+invoke = "^2.2.0"
+pytest = "^8.3.2"
+flake8 = "^7.1.1"
+black = "^24.8.0"
+mypy = "^1.11.1"
+pytest-coverage = "^0.0"
+requests = "^2.32.3"
 
 
 [build-system]

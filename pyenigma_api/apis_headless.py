@@ -1,3 +1,4 @@
+"""This module contains the REST API implementation of the Enigma."""
 from fastapi import FastAPI
 from typing import Tuple, List, Dict
 from pyenigma_api.plugboard import PlugBoard

@@ -59,8 +59,24 @@ def test_plugboard_short_not_alphabet(empty_plugboard, short, invalid_int, shoul
         with does_not_raise(): # It is just an empty context to ensure no errors are raised
             empty_plugboard.add_short(short)
 
-def test_plugboard_remove_short():
-    
+@mark.parametrize(
+    "present_shorts, remove_short, expected_shorts_list, expected_shorts_dict",
+    (
+        (((1,5),(7,2),(9,10),(19,21)),(19,21), [{1,5},{7,2},{9,10}], {1:5, 5:1, 7:2, 2:7, 9:10 , 10:9}),
+        (((2,4), (10,11), (15,17), (23,24)),(24,23), [{2,4},{10,11},{15,17}], {2:4, 4:2, 10:11, 11:10, 15:17 , 17:15}),
+        
+ #       (((1,4), (17,11), (14,19), (20,24)),(24,20), [(1,4),(17,11),(15,17)], {2:4, 4:2, 10:11, 11:10, 15:17 , 17:15}),
+  #      (((20,9), (10,11), (15,17), (23,24)),(23,24), [(2,4),(10,11),(15,17)], {2:4, 4:2, 10:11, 11:10, 15:17 , 17:15}),
+   #     (((10,7), (10,11), (15,17), (23,24)),(23,24), [(2,4),(10,11),(15,17)], {2:4, 4:2, 10:11, 11:10, 15:17 , 17:15}),
+    )
+)
+def test_plugboard_remove_short(empty_plugboard, present_shorts, remove_short, expected_shorts_list, expected_shorts_dict):
+    for short in present_shorts:
+        empty_plugboard.add_short(short)
+    empty_plugboard.remove_short(remove_short)
+    assert expected_shorts_dict == empty_plugboard.shorts_dict
+    assert expected_shorts_list == empty_plugboard.shorts_list
+       
 
 def test_plugboard_ouput():
     pass

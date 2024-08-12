@@ -1,6 +1,6 @@
 """This module contains the implmentation for plugboard"""
 import functools
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Set
 
 
 #TODO :  Fix the error types to proper types
@@ -34,14 +34,14 @@ class PlugBoard:
     would lead to non-determinism of the output. 
 
     Attributes:
-        shorts_dict (dict): Dictionary of all the short present in the plugboard.
-            For every short there are two key value pairs present in the plugboard.
-        shorts (dict): List of all the short tuples in the plugboard.
+        shorts_dict (dict): Dictionary of all the short present in the plugboard
+            For every short there are two key value pairs present in the plugboard
+        shorts (dict): List of all the shorts in the plugboard as two element sets
     """
     def __init__(self):
         """Initialize the plugboard with new shorts"""
         self.shorts_dict: Dict[int, int] = {}
-        self.shorts_list: List[Tuple[int, int]] = []
+        self.shorts_list: List[Set[int, int]] = []
     
     def get_all_shorts(self)-> List[Tuple[int, int]]:
         return self.shorts_list
@@ -63,7 +63,7 @@ class PlugBoard:
             raise Exception("An element cannot be shorted with itelf")
         self.shorts_dict[short_a] = short_b
         self.shorts_dict[short_b] = short_a
-        self.shorts_list.append(short)
+        self.shorts_list.append(set(short))
 
     @ensure_short_is_alphabet
     def remove_short(self, short_tuple: Tuple[int, int]) -> None:
@@ -82,7 +82,7 @@ class PlugBoard:
             raise KeyError("The provided short is not present in the switch board")
         self.shorts_dict.pop(short_a)
         self.shorts_dict.pop(short_b)
-        self.shorts_list.remove(short_tuple)
+        self.shorts_list.remove(set(short_tuple))
 
 
     def get_output(self, input_int: int) -> int:
